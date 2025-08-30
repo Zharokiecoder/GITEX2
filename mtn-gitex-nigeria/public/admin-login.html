@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTN GITEX Nigeria - Admin Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="mtn-logo">MTN</div>
+            <div class="event-title">GITEX Nigeria</div>
+        </div>
+
+        <!-- Admin Login -->
+        <div class="card">
+            <h2>Admin Login</h2>
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Username" id="adminUsername" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Password" id="adminPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Admin login handler
+        document.getElementById('adminLoginForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (username === 'admin@mtn.ng' && password === '1234') {
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                alert('Invalid login credentials');
+            }
+        });
+    </script>
+</body>
+
+</html>

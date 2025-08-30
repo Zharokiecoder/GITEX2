@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTN GITEX Nigeria - Registration Successful</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="mtn-logo">MTN</div>
+            <div class="event-title">GITEX Nigeria</div>
+        </div>
+
+        <!-- Success Screen -->
+        <div class="card">
+            <div class="success-message">
+                <h2 class="success-title">Thank you!</h2>
+                <p class="success-subtitle">Your registration was successful.</p>
+                <button type="button" class="btn btn-primary"
+                    onclick="window.location.href='feedback.html'">Feedback</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">Back to
+                    Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Clear registration data after successful submission
+        document.addEventListener('DOMContentLoaded', function () {
+            localStorage.removeItem('registrationData');
+        });
+    </script>
+</body>
+
+</html>

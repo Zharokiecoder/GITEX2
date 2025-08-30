@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTN GITEX Nigeria - Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="mtn-logo">MTN</div>
+            <div class="event-title">GITEX Nigeria</div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div class="card" style="max-width: 800px;">
+            <h2>Registration Dashboard</h2>
+
+            <div class="form-group">
+                <input type="text" class="form-control" id="adminSearch" placeholder="Search Name, Email or Location"
+                    onkeyup="searchRegistrations()">
+                <button class="export-btn" onclick="exportData()">Export</button>
+            </div>
+
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Gender</th>
+                            <th>Email</th>
+                            <th>Location</th>
+                            <th>Reg Channel</th>
+                            <th>Area of Interest</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrationTableBody">
+                        <!-- Sample data -->
+                        <tr>
+                            <td>John Okon</td>
+                            <td>Male</td>
+                            <td>John@gmail.com</td>
+                            <td>Lagos</td>
+                            <td>walk-in</td>
+                            <td>MoMo</td>
+                        </tr>
+                        <tr>
+                            <td>Ann Amara</td>
+                            <td>Female</td>
+                            <td>Ann@gmail.com</td>
+                            <td>Kano</td>
+                            <td>VIP</td>
+                            <td>Fiber X</td>
+                        </tr>
+                        <tr>
+                            <td>Blake Okon</td>
+                            <td>Male</td>
+                            <td>BO@gmail.com</td>
+                            <td>Abuja</td>
+                            <td>Staff</td>
+                            <td>Chinoses</td>
+                        </tr>
+                        <tr>
+                            <td>John Olu</td>
+                            <td>Male</td>
+                            <td>John3@gmail.com</td>
+                            <td>Aba</td>
+                            <td>Invited</td>
+                            <td>Fiber X</td>
+                        </tr>
+                        <tr>
+                            <td>Joel Ani</td>
+                            <td>Male</td>
+                            <td>Jay@gmail.com</td>
+                            <td>Lagos</td>
+                            <td>walk-in</td>
+                            <td>MoMo</td>
+                        </tr>
+                        <tr>
+                            <td>Esther Buba</td>
+                            <td>Female</td>
+                            <td>EstB@gmail.com</td>
+                            <td>Abuja</td>
+                            <td>Invited</td>
+                            <td>IOT</td>
+                        </tr>
+                        <tr>
+                            <td>Shep Okon</td>
+                            <td>Female</td>
+                            <td>John@gmail.com</td>
+                            <td>Lagos</td>
+                            <td>walk-in</td>
+                            <td>MoMo</td>
+                        </tr>
+                        <tr>
+                            <td>John Okon</td>
+                            <td>Male</td>
+                            <td>John@gmail.com</td>
+                            <td>Lagos</td>
+                            <td>Staff</td>
+                            <td>Fiber X</td>
+                        </tr>
+                        <tr>
+                            <td>Sissy Okon</td>
+                            <td>Female</td>
+                            <td>John@gmail.com</td>
+                            <td>Lagos</td>
+                            <td>walk-in</td>
+                            <td>Chinoses</td>
+                        </tr>
+                        <tr>
+                            <td>Smith Okon</td>
+                            <td>Male</td>
+                            <td>John@gmail.com</td>
+                            <td>Lagos</td>
+                            <td>walk-in</td>
+                            <td>MoMo</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="btn-nav">
+                <button type="button" class="btn btn-primary" onclick="window.location.href='admin-feedback.html'">MTN
+                    Customer Feedback</button>
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">
+                    < Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function searchRegistrations() {
+            const searchTerm = document.getElementById('adminSearch').value.toLowerCase();
+            const table = document.getElementById('registrationTableBody');
+            const rows = table.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function exportData() {
+            const table = document.getElementById('registrationTableBody');
+            const rows = Array.from(table.querySelectorAll('tr:not([style*="display: none"])'));
+
+            let csvContent = 'Full Name,Gender,Email,Location,Registration Channel,Area of Interest\n';
+
+            rows.forEach(row => {
+                const cells = Array.from(row.cells);
+                const rowData = cells.map(cell => `"${cell.textContent}"`).join(',');
+                csvContent += rowData + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'gitex_registrations.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Load registrations from API if available
+        document.addEventListener('DOMContentLoaded', function () {
+            // For production, load data from API:
+            // loadRegistrations();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTN GITEX Nigeria - Feedback</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="mtn-logo">MTN</div>
+            <div class="event-title">GITEX Nigeria</div>
+        </div>
+
+        <!-- Feedback Form -->
+        <div class="card">
+            <h2>Feedback</h2>
+
+            <div class="form-group">
+                <textarea id="feedbackText1" class="form-control" style="min-height: 80px;"
+                    placeholder="How can we improve our service?"></textarea>
+            </div>
+
+            <div class="form-group">
+                <textarea id="feedbackText2" class="form-control" style="min-height: 100px;"
+                    placeholder="Write your feedback"></textarea>
+            </div>
+
+            <div class="rating-group">
+                <label>Rate your experience today (1-5):</label>
+                <div class="rating-options">
+                    <div class="rating-item" data-rating="5">
+                        <div class="rating-emoji">😊</div>
+                        <div class="rating-label">Satisfied</div>
+                        <input type="checkbox" class="rating-checkbox">
+                    </div>
+                    <div class="rating-item" data-rating="4">
+                        <div class="rating-emoji">🙂</div>
+                        <div class="rating-label">Good</div>
+                        <input type="checkbox" class="rating-checkbox">
+                    </div>
+                    <div class="rating-item" data-rating="3">
+                        <div class="rating-emoji">😐</div>
+                        <div class="rating-label">Neutral</div>
+                        <input type="checkbox" class="rating-checkbox">
+                    </div>
+                    <div class="rating-item" data-rating="2">
+                        <div class="rating-emoji">☹️</div>
+                        <div class="rating-label">Bad</div>
+                        <input type="checkbox" class="rating-checkbox">
+                    </div>
+                    <div class="rating-item" data-rating="1">
+                        <div class="rating-emoji">😞</div>
+                        <div class="rating-label">Unsatisfied</div>
+                        <input type="checkbox" class="rating-checkbox">
+                    </div>
+                </div>
+            </div>
+
+            <div class="btn-nav">
+                <button type="button" class="btn btn-primary" id="submitBtn" onclick="submitFeedback()">Submit</button>
+                <button type="button" class="btn btn-secondary"
+                    onclick="window.location.href='index.html'">Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRating = null;
+
+        // Rating selection handlers
+        document.querySelectorAll('.rating-item').forEach(item => {
+            item.addEventListener('click', function () {
+                // Remove selection from all items
+                document.querySelectorAll('.rating-item').forEach(r => {
+                    r.classList.remove('selected');
+                    r.querySelector('.rating-checkbox').checked = false;
+                });
+
+                // Select this item
+                this.classList.add('selected');
+                this.querySelector('.rating-checkbox').checked = true;
+                selectedRating = parseInt(this.dataset.rating);
+
+                console.log('Rating selected:', selectedRating);
+            });
+        });
+
+        // Feedback submission with backend integration
+        async function submitFeedback() {
+            const feedback1 = document.getElementById('feedbackText1').value.trim();
+            const feedback2 = document.getElementById('feedbackText2').value.trim();
+
+            if (!feedback1 && !feedback2) {
+                alert('Please provide some feedback');
+                return;
+            }
+
+            const feedbackData = {
+                feedback1: feedback1,
+                feedback2: feedback2,
+                rating: selectedRating,
+                timestamp: new Date().toISOString()
+            };
+
+            console.log('Submitting feedback:', feedbackData);
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+
+            try {
+                // Submit to backend API
+                const response = await submitFeedbackAPI(feedbackData);
+                console.log('Feedback successful:', response);
+
+                // Show success message
+                alert('Thank you for your feedback!');
+
+                // Clear form
+                document.getElementById('feedbackText1').value = '';
+                document.getElementById('feedbackText2').value = '';
+                selectedRating = null;
+
+                // Clear rating selection
+                document.querySelectorAll('.rating-item').forEach(r => {
+                    r.classList.remove('selected');
+                    r.querySelector('.rating-checkbox').checked = false;
+                });
+
+                // Redirect to home
+                window.location.href = 'index.html';
+
+            } catch (error) {
+                console.error('Feedback failed:', error);
+                alert(`Failed to submit feedback: ${error.message}. Please try again.`);
+
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Make selectedRating available globally for API
+        window.selectedRating = selectedRating;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            // Test API connection
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => console.log('API connected:', data.status))
+                .catch(error => console.log('API offline, using fallback'));
+
+            // Update global selectedRating when changed
+            document.querySelectorAll('.rating-item').forEach(item => {
+                item.addEventListener('click', function () {
+                    window.selectedRating = selectedRating;
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

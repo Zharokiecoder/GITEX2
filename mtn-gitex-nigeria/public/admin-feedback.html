@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTN GITEX Nigeria - Customer Feedback</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="mtn-logo">MTN</div>
+            <div class="event-title">GITEX Nigeria</div>
+        </div>
+
+        <!-- Admin Feedback View -->
+        <div class="card">
+            <h2>MTN Customer Feedback</h2>
+
+            <div class="feedback-cards" id="feedbackCards">
+                <!-- Sample feedback -->
+                <div class="feedback-card">
+                    <div class="feedback-name">John Deo</div>
+                    <div class="feedback-text">Great customer service</div>
+                    <div class="feedback-date">2025, 02, 27</div>
+                </div>
+                <div class="feedback-card">
+                    <div class="feedback-name">John Deo</div>
+                    <div class="feedback-text">Great customer service</div>
+                    <div class="feedback-date">2025, 02, 27</div>
+                </div>
+                <div class="feedback-card">
+                    <div class="feedback-name">John Deo</div>
+                    <div class="feedback-text">Great customer service</div>
+                    <div class="feedback-date">2025, 02, 27</div>
+                </div>
+                <div class="feedback-card">
+                    <div class="feedback-name">Sarah Ahmed</div>
+                    <div class="feedback-text">The registration process was smooth and the staff was helpful</div>
+                    <div class="feedback-date">2025, 02, 26 | Rating: 5/5</div>
+                </div>
+                <div class="feedback-card">
+                    <div class="feedback-name">Michael Okafor</div>
+                    <div class="feedback-text">Good event, but could improve on network connectivity</div>
+                    <div class="feedback-date">2025, 02, 26 | Rating: 4/5</div>
+                </div>
+            </div>
+
+            <button class="download-btn" onclick="downloadFeedback()">
+                <span>⬇</span> Download Feedback
+            </button>
+
+            <div class="btn-nav">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='admin-dashboard.html'">
+                    < Back</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadFeedback() {
+            const feedbackCards = document.querySelectorAll('.feedback-card');
+            let csvContent = 'Name,Feedback,Date\n';
+
+            feedbackCards.forEach(card => {
+                const name = card.querySelector('.feedback-name').textContent;
+                const feedback = card.querySelector('.feedback-text').textContent;
+                const date = card.querySelector('.feedback-date').textContent;
+
+                csvContent += `"${name}","${feedback}","${date}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mtn_customer_feedback.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Load feedback from API if available
+        document.addEventListener('DOMContentLoaded', function () {
+            // For production, load data from API:
+            // loadFeedback();
+        });
+    </script>
+</body>
+
+</html>

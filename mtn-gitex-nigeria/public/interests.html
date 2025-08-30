@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTN GITEX Nigeria - Areas of Interest</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="api.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="mtn-logo">MTN</div>
+            <div class="event-title">GITEX Nigeria</div>
+        </div>
+
+        <!-- Areas of Interest -->
+        <div class="card">
+            <h2>Areas of Interest</h2>
+            <div class="interest-count">Select up to 2 areas of interest (0/2)</div>
+            <div class="interests-grid">
+                <div class="interest-item" data-interest="Cloud Service Solution">
+                    <span>Cloud Service Solution</span>
+                    <div class="plus-icon">+</div>
+                </div>
+                <div class="interest-item" data-interest="Enterprise Business">
+                    <span>Enterprise Business</span>
+                    <div class="plus-icon">+</div>
+                </div>
+                <div class="interest-item" data-interest="Bayobab – Fiber Infrastructure">
+                    <span>Bayobab – Fiber Infrastructure</span>
+                    <div class="plus-icon">+</div>
+                </div>
+                <div class="interest-item" data-interest="Chenosis">
+                    <span>Chenosis</span>
+                    <div class="plus-icon">+</div>
+                </div>
+                <div class="interest-item" data-interest="MoMo">
+                    <span>MoMo</span>
+                    <div class="plus-icon">+</div>
+                </div>
+                <div class="interest-item" data-interest="Fiber X">
+                    <span>Fiber X</span>
+                    <div class="plus-icon">+</div>
+                </div>
+                <div class="interest-item" data-interest="IOT">
+                    <span>IOT</span>
+                    <div class="plus-icon">+</div>
+                </div>
+                <div class="interest-item" data-interest="Cyber Security">
+                    <span>Cyber Security</span>
+                    <div class="plus-icon">+</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Other (optional)</label>
+                <input type="text" id="otherInterest" class="form-control"
+                    placeholder="e.g., Home broadband, Roaming/Int">
+            </div>
+
+            <div class="btn-nav">
+                <button type="button" class="btn btn-secondary"
+                    onclick="window.location.href='registration.html'">Back</button>
+                <button type="button" class="btn btn-primary" id="submitBtn" onclick="submitRegistration()">Submit &
+                    Feedback ></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedInterests = [];
+
+        // Interest selection handlers (max 2 selections)
+        document.querySelectorAll('.interest-item').forEach(item => {
+            item.addEventListener('click', function () {
+                if (this.classList.contains('disabled')) return;
+
+                const interest = this.dataset.interest;
+
+                if (this.classList.contains('selected')) {
+                    // Deselect
+                    this.classList.remove('selected');
+                    const icon = this.querySelector('.plus-icon');
+                    icon.textContent = '+';
+                    selectedInterests = selectedInterests.filter(i => i !== interest);
+
+                    // Enable all disabled items
+                    document.querySelectorAll('.interest-item.disabled').forEach(disabledItem => {
+                        disabledItem.classList.remove('disabled');
+                    });
+                } else {
+                    // Select (if under limit)
+                    if (selectedInterests.length < 2) {
+                        this.classList.add('selected');
+                        const icon = this.querySelector('.plus-icon');
+                        icon.textContent = '✓';
+                        selectedInterests.push(interest);
+
+                        // If we've reached the limit, disable other items
+                        if (selectedInterests.length === 2) {
+                            document.querySelectorAll('.interest-item:not(.selected)').forEach(unselectedItem => {
+                                unselectedItem.classList.add('disabled');
+                            });
+                        }
+                    }
+                }
+
+                updateInterestCount();
+            });
+        });
+
+        function updateInterestCount() {
+            const countEl = document.querySelector('.interest-count');
+            const remaining = 2 - selectedInterests.length;
+            if (remaining === 0) {
+                countEl.textContent = 'Maximum selections reached (2/2)';
+                countEl.style.color = '#e74c3c';
+            } else {
+                countEl.textContent = `Select up to 2 areas of interest (${selectedInterests.length}/2)`;
+                countEl.style.color = '#666';
+            }
+        }
+
+        // Registration submission with backend integration
+        async function submitRegistration() {
+            if (selectedInterests.length === 0) {
+                alert('Please select at least one area of interest');
+                return;
+            }
+
+            // Get stored registration data
+            const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
+            registrationData.interests = selectedInterests;
+            registrationData.otherInterest = document.getElementById('otherInterest').value;
+            registrationData.consent = true; // Required for reaching this step
+
+            console.log('Submitting registration:', registrationData);
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+
+            try {
+                // Submit to backend API
+                const response = await submitRegistrationAPI(registrationData);
+                console.log('Registration successful:', response);
+
+                // Clear local data
+                localStorage.removeItem('registrationData');
+
+                // Redirect to success page
+                window.location.href = 'success.html';
+
+            } catch (error) {
+                console.error('Registration failed:', error);
+                alert(`Registration failed: ${error.message}. Please try again.`);
+
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Make selectedInterests available globally for API
+        window.selectedInterests = selectedInterests;
+
+        // Initialize counter on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateInterestCount();
+
+            // Test API connection
+            fetch('/api/health')
+                .then(response => response.json())
+                .then(data => console.log('API connected:', data.status))
+                .catch(error => console.log('API offline, using fallback'));
+        });
+    </script>
+</body>
+
+</html>
