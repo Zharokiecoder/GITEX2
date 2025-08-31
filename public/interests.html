@@ -6,14 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MTN GITEX Nigeria - Areas of Interest</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="api.js"></script>
 </head>
 
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="mtn-logo">MTN</div>
+            <div class="mtn-logo">
+                <img src="asset/mtn-logo.png" alt="MTN">
+            </div>
             <div class="event-title">GITEX Nigeria</div>
         </div>
 
@@ -65,8 +66,8 @@
             <div class="btn-nav">
                 <button type="button" class="btn btn-secondary"
                     onclick="window.location.href='registration.html'">Back</button>
-                <button type="button" class="btn btn-primary" id="submitBtn" onclick="submitRegistration()">Submit &
-                    Feedback ></button>
+                <button type="button" class="btn btn-primary" onclick="submitRegistration()">Submit & Feedback
+                    ></button>
             </div>
         </div>
     </div>
@@ -125,8 +126,7 @@
             }
         }
 
-        // Registration submission with backend integration
-        async function submitRegistration() {
+        function submitRegistration() {
             if (selectedInterests.length === 0) {
                 alert('Please select at least one area of interest');
                 return;
@@ -136,49 +136,18 @@
             const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
             registrationData.interests = selectedInterests;
             registrationData.otherInterest = document.getElementById('otherInterest').value;
-            registrationData.consent = true; // Required for reaching this step
 
-            console.log('Submitting registration:', registrationData);
+            console.log('Registration submitted:', registrationData);
 
-            // Show loading state
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = 'Submitting...';
-            submitBtn.disabled = true;
+            // Store the complete data
+            localStorage.setItem('registrationData', JSON.stringify(registrationData));
 
-            try {
-                // Submit to backend API
-                const response = await submitRegistrationAPI(registrationData);
-                console.log('Registration successful:', response);
-
-                // Clear local data
-                localStorage.removeItem('registrationData');
-
-                // Redirect to success page
-                window.location.href = 'success.html';
-
-            } catch (error) {
-                console.error('Registration failed:', error);
-                alert(`Registration failed: ${error.message}. Please try again.`);
-
-                // Reset button state
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }
+            window.location.href = 'feedback.html';
         }
 
-        // Make selectedInterests available globally for API
-        window.selectedInterests = selectedInterests;
-
-        // Initialize counter on page load
+        // Initialize counter
         document.addEventListener('DOMContentLoaded', function () {
             updateInterestCount();
-
-            // Test API connection
-            fetch('/api/health')
-                .then(response => response.json())
-                .then(data => console.log('API connected:', data.status))
-                .catch(error => console.log('API offline, using fallback'));
         });
     </script>
 </body>

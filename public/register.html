@@ -4,25 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTN GITEX Nigeria - Register</title>
+    <title>Register - GITEX Nigeria</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="api.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="mtn-logo">MTN</div>
-            <div class="event-title">GITEX Nigeria</div>
+    <div class="page-container">
+        <!-- Header with Logo -->
+        <div class="header-section">
+            <div class="mtn-logo-small">
+                <img src="asset/mtn-logo.png" alt="MTN" style="width: 100%; height: auto;">
+            </div>
+            <p class="gitex-subtitle">GITEX Nigeria</p>
         </div>
 
-        <!-- Register Menu -->
-        <div class="card">
-            <h2>Welcome to GITEX Nigeria</h2>
-            <button class="btn btn-primary" onclick="window.location.href='registration.html'">Register</button>
-        </div>
+        <!-- Welcome Text -->
+        <h1 class="welcome-text-black">Welcome to GITEX Nigeria</h1>
+
+        <!-- Register Button -->
+        <button class="register-btn" onclick="handleRegister()">Register</button>
     </div>
+
+    <script>
+        function handleRegister() {
+            // Add your registration logic here
+            console.log('Opening registration form...');
+
+            window.location.href = 'registration.html';
+        }
+    </script>
 </body>
 
 </html>

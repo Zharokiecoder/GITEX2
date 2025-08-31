@@ -4,25 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTN GITEX Nigeria - Welcome</title>
+    <title>Welcome to GITEX Nigeria</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="api.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="mtn-logo">MTN</div>
-            <div class="event-title">GITEX Nigeria</div>
+    <div class="page-container">
+        <!-- MTN Logo -->
+        <div class="mtn-logo-large">
+            <img src="asset/mtn-logo.png" alt="MTN" style="width: 100%; height: auto;">
         </div>
 
-        <!-- Welcome Screen -->
-        <div class="welcome-screen">
-            <h1 class="welcome-title">Welcome to GITEX Nigeria</h1>
-            <button class="btn btn-primary" onclick="window.location.href='register.html'">Get Started</button>
+        <!-- Welcome Text -->
+        <h1 class="welcome-text-white">Welcome to GITEX Nigeria</h1>
+
+        <!-- Get Started Button -->
+        <button class="get-started-btn" onclick="window.location.href='register.html'">Get Started</button>
+
+        <!-- Admin Badge -->
+        <div class="admin-badge">
             <button class="admin-btn-float" onclick="window.location.href='admin-login.html'">
-                <span>⚙</span> Admin
+                <span class="admin-icon">👤</span>
+                Admin
             </button>
         </div>
     </div>
