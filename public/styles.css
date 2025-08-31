@@ -932,10 +932,11 @@ textarea.form-control {
 
 /* Mobile Responsiveness - Complete Rewrite */
 @media (max-width: 768px) {
-  /* Fix body and containers for mobile */
   body {
-    background-size: auto 100%;
-    background-position: top center;
+    background-image: url("asset/background1-mobile.jpg");
+    background-size: cover;
+    background-position: center top;
+    background-attachment: scroll;
   }
 
   .container,
