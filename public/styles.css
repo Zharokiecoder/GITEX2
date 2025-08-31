@@ -18,7 +18,7 @@ body {
   overflow-x: hidden;
   position: relative;
   background-image: url("asset/background1.jpg");
-  background-size: 100% 100%;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -43,7 +43,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   padding: 20px;
   position: relative;
 }
@@ -220,17 +219,6 @@ body {
   max-width: 650px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   margin: 0 auto 40px auto;
-}
-
-/* For desktop - ensure cards don't cover the circuit pattern */
-@media (min-width: 769px) {
-  .container {
-    padding-bottom: 100px; /* Space for circuit pattern visibility */
-  }
-
-  .card {
-    margin-top: 20px;
-  }
 }
 
 .card h2 {
@@ -690,347 +678,63 @@ textarea.form-control {
   width: 6px;
 }
 
-/* Tablet Specific - 1200x1920px Portrait Mode */
-@media (min-width: 769px) and (max-width: 1200px) and (orientation: portrait) {
-  /* Container adjustments for tablet */
-  .container,
-  .page-container {
-    padding: 30px;
-    min-height: 100vh;
-  }
-
-  /* Background optimization for tablet */
-  body {
-    background-size: 100% 100%;
-    background-position: center;
-  }
-
-  /* Card sizing for tablet */
-  .card {
-    width: 85%;
-    max-width: 900px;
-    padding: 45px;
-    margin: 20px auto 50px auto;
-    border-radius: 25px;
-  }
-
-  .card h2 {
-    font-size: 32px;
-    margin-bottom: 30px;
-  }
-
-  /* Logo sizing for tablet */
-  .mtn-logo-large {
-    width: 320px;
-    height: 160px;
-    margin-bottom: 80px;
-  }
-
-  .header .mtn-logo,
-  .mtn-logo-small {
-    width: 160px;
-    height: 80px;
-    margin-bottom: 15px;
-  }
-
-  /* Text sizing for tablet */
-  .welcome-text-white {
-    font-size: 56px;
-    margin-bottom: 70px;
-  }
-
-  .welcome-text-black {
-    font-size: 42px;
-    margin-bottom: 60px;
-  }
-
-  .event-title,
-  .gitex-subtitle {
-    font-size: 24px;
-  }
-
-  /* Button sizing for tablet */
-  .get-started-btn {
-    font-size: 26px;
-    padding: 25px 80px;
-  }
-
-  .register-btn {
-    font-size: 24px;
-    padding: 24px 0;
-    width: 600px;
-    max-width: 80%;
-  }
-
-  .btn {
-    padding: 18px 50px;
-    font-size: 18px;
-    min-width: 180px;
-  }
-
-  /* Form elements for tablet */
-  .form-control {
-    padding: 16px 20px;
-    font-size: 18px;
-    border-radius: 12px;
-  }
-
-  .form-group label {
-    font-size: 16px;
-    margin-bottom: 10px;
-  }
-
-  /* Keep form rows in 2 columns on tablet */
-  .form-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-  }
-
-  /* Interest grid - 2 columns on tablet */
-  .interests-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  .interest-item {
-    padding: 18px;
-    border-radius: 15px;
-  }
-
-  .interest-item span {
-    font-size: 16px;
-  }
-
-  .plus-icon {
-    width: 30px;
-    height: 30px;
-    font-size: 20px;
-  }
-
-  /* Option buttons for tablet */
-  .option-btn {
-    padding: 14px 20px;
-    font-size: 16px;
-    border-radius: 25px;
-  }
-
-  /* Rating items for tablet */
-  .rating-item {
-    padding: 20px 15px;
-  }
-
-  .rating-emoji {
-    font-size: 42px;
-    margin-bottom: 10px;
-  }
-
-  .rating-label {
-    font-size: 14px;
-  }
-
-  /* Admin badge for tablet */
-  .admin-badge {
-    bottom: 50px;
-    right: 50px;
-    font-size: 18px;
-    padding: 15px 30px;
-  }
-
-  .admin-icon {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-  }
-
-  /* Success page for tablet */
-  .success-title {
-    font-size: 48px;
-  }
-
-  .success-subtitle {
-    font-size: 24px;
-    margin-bottom: 50px;
-  }
-
-  .success-message {
-    padding: 80px 30px;
-  }
-
-  /* Table for tablet */
-  .admin-table {
-    font-size: 16px;
-  }
-
-  .admin-table th,
-  .admin-table td {
-    padding: 14px;
-  }
-
-  /* Feedback cards for tablet */
-  .feedback-cards {
-    max-height: 600px;
-  }
-
-  .feedback-card {
-    padding: 25px;
-    border-radius: 15px;
-  }
-
-  .feedback-name {
-    font-size: 18px;
-  }
-
-  .feedback-text {
-    font-size: 16px;
-  }
-
-  /* Navigation buttons arrangement */
-  .btn-nav {
-    flex-direction: row;
-    gap: 20px;
-    justify-content: center;
-  }
-
-  /* Header spacing */
-  .header {
-    margin-top: 60px;
-    margin-bottom: 40px;
-  }
-
-  .header-section {
-    top: 80px;
-  }
-
-  /* Checkbox group for tablet */
-  .checkbox-group input[type="checkbox"] {
-    width: 22px;
-    height: 22px;
-  }
-
-  .checkbox-group label {
-    font-size: 16px;
-  }
-}
-
-/* High resolution tablet in landscape mode */
-@media (min-width: 1201px) and (max-width: 1920px) and (orientation: landscape) {
-  /* Adjust for landscape tablet viewing */
-  .card {
-    width: 70%;
-    max-width: 800px;
-  }
-
-  .container {
-    padding: 40px;
-  }
-
-  /* Ensure circuit pattern is visible */
-  body {
-    background-size: 100% 100%;
-  }
-}
-
-/* Mobile Responsiveness - Complete Rewrite */
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
-  body {
-    background-image: url("asset/background1-mobile.jpg");
-    background-size: cover;
-    background-position: center top;
-    background-attachment: scroll;
-  }
-
+  /* Ensure full width containers on mobile */
   .container,
   .page-container {
     padding: 10px;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
   }
 
-  /* Header centering */
-  .header {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  /* Card - Full width with proper margins */
+  /* Card takes full width on mobile */
   .card {
-    width: calc(100% - 20px);
-    max-width: none;
-    margin: 10px;
+    width: 100%;
+    max-width: 100%;
     padding: 25px 20px;
+    margin: 0 auto 30px auto;
     border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   }
 
   .card h2 {
     font-size: 24px;
-    text-align: center;
-    margin-bottom: 20px;
   }
 
-  /* Logo adjustments */
   .mtn-logo-large {
     width: 180px;
     height: 90px;
-    margin-bottom: 40px;
   }
 
-  .header .mtn-logo,
-  .mtn-logo-small {
-    width: 100px;
-    height: 50px;
-    margin-bottom: 8px;
-  }
-
-  /* Text adjustments */
   .welcome-text-white {
     font-size: 32px;
-    padding: 0 20px;
+    padding: 0 15px;
     margin-bottom: 40px;
-    text-align: center;
+  }
+
+  .get-started-btn {
+    font-size: 18px;
+    padding: 16px 45px;
   }
 
   .welcome-text-black {
     font-size: 26px;
     padding: 0 15px;
-    text-align: center;
-  }
-
-  .event-title,
-  .gitex-subtitle {
-    font-size: 18px;
-    text-align: center;
-  }
-
-  /* Buttons */
-  .get-started-btn {
-    font-size: 18px;
-    padding: 16px 45px;
-    white-space: nowrap;
   }
 
   .register-btn {
     font-size: 18px;
-    padding: 16px 30px;
-    width: 90%;
-    max-width: 300px;
+    padding: 16px 0;
+    width: 95%;
+    max-width: 350px;
   }
 
   .admin-badge {
-    bottom: 15px;
-    right: 15px;
-    font-size: 13px;
-    padding: 8px 16px;
+    bottom: 20px;
+    right: 20px;
+    font-size: 14px;
+    padding: 10px 18px;
   }
 
-  /* Form elements */
+  /* Form adjustments */
   .form-row {
     grid-template-columns: 1fr;
     gap: 15px;
@@ -1038,68 +742,31 @@ textarea.form-control {
 
   .form-group {
     margin-bottom: 15px;
-    width: 100%;
   }
 
   .form-control {
-    width: 100%;
     padding: 14px 12px;
-    font-size: 16px;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
+    font-size: 16px; /* Prevent zoom on iOS */
   }
 
-  /* Input specific fix for iOS */
-  input[type="text"],
-  input[type="email"],
-  input[type="tel"],
-  input[type="password"],
-  textarea,
-  select {
-    font-size: 16px !important;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  /* Interest grid */
+  /* Interest grid single column */
   .interests-grid {
     grid-template-columns: 1fr;
     gap: 12px;
-    width: 100%;
   }
 
   .interest-item {
     padding: 14px;
-    width: 100%;
   }
 
-  /* Options buttons */
-  .channel-options,
-  .gender-options {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .option-btn {
-    flex: 1 1 calc(50% - 4px);
-    min-width: 100px;
-    padding: 12px 10px;
-    font-size: 14px;
-  }
-
-  /* Rating items */
+  /* Rating options responsive */
   .rating-options {
     gap: 5px;
-    justify-content: space-around;
   }
 
   .rating-item {
     padding: 10px 5px;
-    flex: 1;
-    min-width: 0;
+    flex: 0 1 auto;
   }
 
   .rating-emoji {
@@ -1110,12 +777,28 @@ textarea.form-control {
     font-size: 10px;
   }
 
-  /* Navigation buttons */
+  /* Table responsive */
+  .table-container {
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-table {
+    font-size: 11px;
+    min-width: 600px;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 8px 6px;
+    font-size: 11px;
+  }
+
+  /* Buttons stack on mobile */
   .btn-nav {
     flex-direction: column;
     gap: 12px;
     width: 100%;
-    padding: 0 10px;
   }
 
   .btn {
@@ -1124,12 +807,21 @@ textarea.form-control {
     font-size: 16px;
   }
 
-  /* Success page */
-  .success-message {
-    padding: 30px 15px;
-    text-align: center;
+  /* Channel options responsive */
+  .channel-options,
+  .gender-options {
+    flex-wrap: wrap;
+    gap: 8px;
   }
 
+  .option-btn {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 120px;
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+
+  /* Success page mobile */
   .success-title {
     font-size: 32px;
   }
@@ -1138,66 +830,59 @@ textarea.form-control {
     font-size: 18px;
   }
 
-  /* Table responsive */
-  .table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin: 15px -10px;
-    padding: 0 10px;
+  .success-message {
+    padding: 40px 15px;
   }
 
-  .admin-table {
-    font-size: 11px;
-    min-width: 500px;
+  /* Header adjustments */
+  .header {
+    margin-top: 30px;
+    margin-bottom: 20px;
   }
 
-  .admin-table th,
-  .admin-table td {
-    padding: 8px 5px;
-    font-size: 11px;
+  .header-section {
+    top: 40px;
   }
 
-  /* Feedback cards */
+  .mtn-logo,
+  .mtn-logo-small {
+    width: 100px;
+    height: 50px;
+  }
+
+  .event-title,
+  .gitex-subtitle {
+    font-size: 18px;
+  }
+
+  /* Feedback cards mobile */
   .feedback-cards {
     max-height: 300px;
-    width: 100%;
   }
 
   .feedback-card {
     padding: 15px;
   }
 
-  /* Checkbox group */
-  .checkbox-group {
-    align-items: flex-start;
+  /* Ensure text is readable */
+  label {
+    font-size: 14px;
   }
 
   .checkbox-group label {
     font-size: 13px;
-    line-height: 1.4;
   }
 }
 
 /* Extra small devices */
 @media (max-width: 480px) {
-  /* Even more compact for very small screens */
   .card {
-    width: calc(100% - 16px);
-    margin: 8px;
-    padding: 20px 15px;
     border-radius: 12px;
-  }
-
-  .card h2 {
-    font-size: 22px;
+    padding: 20px 15px;
   }
 
   .welcome-text-white {
     font-size: 28px;
-  }
-
-  .welcome-text-black {
-    font-size: 24px;
   }
 
   .mtn-logo-large {
@@ -1205,29 +890,39 @@ textarea.form-control {
     height: 80px;
   }
 
-  /* Stack all option buttons vertically on very small screens */
   .option-btn {
     flex: 1 1 100%;
-    width: 100%;
   }
 
-  /* Rating options in 2 rows */
   .rating-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    flex-direction: column;
   }
 
-  .rating-item:nth-child(4),
-  .rating-item:nth-child(5) {
-    grid-column: span 1.5;
+  .rating-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 15px;
+  }
+
+  .rating-emoji {
+    margin: 0;
+  }
+
+  .rating-label {
+    font-size: 14px;
   }
 }
 
-/* Viewport meta tag fix for mobile */
-@viewport {
-  width: device-width;
-  initial-scale: 1;
-  maximum-scale: 1;
-  user-scalable: 0;
+/* Ensure proper viewport on iOS devices */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
