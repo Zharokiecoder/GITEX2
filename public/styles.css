@@ -505,7 +505,7 @@ textarea.form-control {
 }
 
 .rating-item.selected {
-  background: #ffcc00;
+  background: white;
   border-color: #ffcc00;
 }
 
