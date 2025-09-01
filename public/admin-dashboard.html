@@ -25,7 +25,7 @@
             <div class="form-group" style="position: relative;">
                 <input type="text" class="form-control" id="adminSearch" placeholder="Search Name, Email or Location"
                     onkeyup="searchRegistrations()">
-                <button class="export-btn" onclick="exportData()">Export</button>
+                <button class="export-btn" onclick="exportData()">Export 📤</button>
             </div>
 
             <div class="table-container">
@@ -37,38 +37,58 @@
                             <th>Email</th>
                             <th>Location</th>
                             <th>Reg Channel</th>
-                            <th>Area of Interest</th>
+                            <th>Area of Int</th>
                         </tr>
                     </thead>
                     <tbody id="registrationTableBody">
-                        <!-- Data will be loaded from MongoDB -->
-                        <tr>
-                            <td colspan="6" style="text-align: center;">Loading...</td>
-                        </tr>
+
                     </tbody>
                 </table>
             </div>
-
-            <div class="btn-nav">
-                <button type="button" class="btn btn-primary" onclick="window.location.href='admin-feedback.html'">MTN
-                    Customer Feedback</button>
-                <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'">
+            <div class="btn-nav"><button type="button" class="btn btn-primary"
+                    onclick="window.location.href='admin-feedback.html'">MTN
+                    Customer Feedback</button></div>
+            <div class="btn-nav" style="justify-content: center;">
+                <button type="button" class="btn btn-secondary" onclick="window.location.href='index.html'"
+                    style="background: #1A1A1A; color: white; order: 1;">
                     < Back</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Search functionality (api.js handles the actual search)
+        // Load registrations when page loads
+        async function loadRegistrations(searchTerm = '') {
+            try {
+                // This will be replaced with actual data from API
+                if (window.loadRegistrations) {
+                    window.loadRegistrations(searchTerm);
+                }
+            } catch (error) {
+                console.error('Error loading registrations:', error);
+            }
+        }
+
+        // Search functionality
         function searchRegistrations() {
-            const searchTerm = document.getElementById('adminSearch').value;
-            window.loadRegistrations(searchTerm);
+            const searchTerm = document.getElementById('adminSearch').value.toLowerCase();
+            const table = document.getElementById('registrationTableBody');
+            const rows = table.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
 
         // Export functionality
         function exportData() {
             const table = document.getElementById('registrationTableBody');
-            const rows = Array.from(table.querySelectorAll('tr'));
+            const rows = Array.from(table.querySelectorAll('tr:not([style*="display: none"])'));
 
             let csvContent = 'Full Name,Gender,Email,Location,Registration Channel,Area of Interest\n';
 
@@ -86,6 +106,12 @@
             a.click();
             URL.revokeObjectURL(url);
         }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+
+            loadRegistrations();
+        });
     </script>
     <script src="api.js"></script>
 </body>
