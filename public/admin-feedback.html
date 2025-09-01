@@ -23,32 +23,8 @@
             <h2>MTN Customer Feedback</h2>
 
             <div class="feedback-cards" id="feedbackCards">
-                <!-- Sample feedback -->
-                <div class="feedback-card">
-                    <div class="feedback-name">John Deo</div>
-                    <div class="feedback-text">Great customer service</div>
-                    <div class="feedback-date">2025, 02, 27</div>
-                </div>
-                <div class="feedback-card">
-                    <div class="feedback-name">John Deo</div>
-                    <div class="feedback-text">Great customer service</div>
-                    <div class="feedback-date">2025, 02, 27</div>
-                </div>
-                <div class="feedback-card">
-                    <div class="feedback-name">John Deo</div>
-                    <div class="feedback-text">Great customer service</div>
-                    <div class="feedback-date">2025, 02, 27</div>
-                </div>
-                <div class="feedback-card">
-                    <div class="feedback-name">Sarah Ahmed</div>
-                    <div class="feedback-text">The registration process was smooth and the staff was helpful</div>
-                    <div class="feedback-date">2025, 02, 26 | Rating: 5/5</div>
-                </div>
-                <div class="feedback-card">
-                    <div class="feedback-name">Michael Okafor</div>
-                    <div class="feedback-text">Good event, but could improve on network connectivity</div>
-                    <div class="feedback-date">2025, 02, 26 | Rating: 4/5</div>
-                </div>
+                <!-- Loading indicator -->
+                <div style="text-align: center; padding: 20px;">Loading feedback...</div>
             </div>
 
             <button class="download-btn" onclick="downloadFeedback()">
@@ -62,51 +38,49 @@
         </div>
     </div>
 
+    <!-- Keep all existing UI scripts -->
     <script>
-        function downloadFeedback() {
-            const feedbackCards = document.querySelectorAll('.feedback-card');
-            let csvContent = 'Name,Feedback,Date\n';
+        // Keep these - they handle UI interactions
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const group = this.parentElement;
+                const hiddenInput = group.parentElement.querySelector('input[type="hidden"]');
 
-            feedbackCards.forEach(card => {
-                const name = card.querySelector('.feedback-name').textContent;
-                const feedback = card.querySelector('.feedback-text').textContent;
-                const date = card.querySelector('.feedback-date').textContent;
+                group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
 
-                csvContent += `"${name}","${feedback}","${date}"\n`;
+                if (hiddenInput) {
+                    hiddenInput.value = this.dataset.value;
+                }
             });
-
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'mtn_customer_feedback.csv';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Load feedback from localStorage if available
-        document.addEventListener('DOMContentLoaded', function () {
-            const storedFeedback = JSON.parse(localStorage.getItem('allFeedback') || '[]');
-            if (storedFeedback.length > 0) {
-                const feedbackCards = document.getElementById('feedbackCards');
-                // Add real feedback to the existing sample data
-                storedFeedback.forEach(feedback => {
-                    const card = document.createElement('div');
-                    card.className = 'feedback-card';
-                    const feedbackText = feedback.feedback1 || feedback.feedback2 || 'No feedback text';
-                    const rating = feedback.rating ? `Rating: ${feedback.rating}/5` : '';
-                    const date = new Date(feedback.timestamp).toLocaleDateString('en-GB').replace(/\//g, ', ');
-
-                    card.innerHTML = `
-                        <div class="feedback-name">Customer Feedback</div>
-                        <div class="feedback-text">${feedbackText}</div>
-                        <div class="feedback-date">${date} ${rating ? '| ' + rating : ''}</div>
-                    `;
-                    feedbackCards.appendChild(card);
-                });
-            }
         });
+
+        // Modified to work with api.js
+        function validateAndProceed() {
+            const form = document.getElementById('regForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+
+            const genderBtn = document.querySelector('.gender-options .option-btn.active');
+            const channelBtn = document.querySelector('.channel-options .option-btn.active');
+
+            if (genderBtn) data.gender = genderBtn.dataset.value;
+            if (channelBtn) data.channel = channelBtn.dataset.value;
+
+            // Store for api.js to use
+            localStorage.setItem('registrationData', JSON.stringify(data));
+            window.location.href = 'interests.html';
+        }
     </script>
+    <script src="api.js"></script>
 </body>
 
 </html>

@@ -149,7 +149,7 @@ function submitFeedbackProduction() {
             .then(response => {
                 console.log('Feedback successful:', response);
                 alert('Thank you for your feedback!');
-                window.location.href = 'index.html';
+                window.location.href = 'sucess.html'; // fixed typo
             })
             .catch(error => {
                 console.error('Feedback failed:', error);
@@ -169,60 +169,60 @@ function loadAdminData() {
     // Load stats
     getAdminStats()
         .then(stats => {
-            // Update stats cards
             const statNumbers = document.querySelectorAll('.stat-number');
             if (statNumbers[0]) statNumbers[0].textContent = stats.registrations;
             if (statNumbers[1]) statNumbers[1].textContent = stats.feedbacks;
             if (statNumbers[2]) statNumbers[2].textContent = stats.admins;
-            
-            console.log('Stats loaded successfully');
         })
         .catch(error => {
             console.error('Failed to load stats:', error);
         });
     
-    // Load registrations for user list
+    // Load registrations
     loadRegistrations();
 }
 
+// Load registrations (works for both dashboard & admin.html table)
 function loadRegistrations(searchQuery = '') {
+    const tbody = document.getElementById('registrationTableBody');
+    if (tbody) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">Loading...</td></tr>`;
+    }
+
     getRegistrations(searchQuery)
         .then(registrations => {
-            // Update user list in stats view
+            // Fill "userList" (dashboard)
             const userList = document.getElementById('userList');
             if (userList) {
                 userList.innerHTML = '';
-                
                 if (registrations.length === 0) {
                     userList.innerHTML = '<div class="user-item">No registrations found</div>';
+                } else {
+                    registrations.slice(0, 10).forEach(reg => {
+                        const userItem = document.createElement('div');
+                        userItem.className = 'user-item';
+                        userItem.innerHTML = `${reg.firstName} ${reg.lastName} - ${reg.email}`;
+                        userList.appendChild(userItem);
+                    });
+                }
+            }
+
+            // Fill "registrationTableBody" (admin.html)
+            if (tbody) {
+                if (registrations.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No records found</td></tr>`;
                     return;
                 }
-                
-                registrations.slice(0, 10).forEach(reg => {
-                    const userItem = document.createElement('div');
-                    userItem.className = 'user-item';
-                    userItem.setAttribute('data-name', `${reg.firstName} ${reg.lastName}`.toLowerCase());
-                    userItem.setAttribute('data-email', reg.email.toLowerCase());
-                    userItem.innerHTML = `${reg.firstName} ${reg.lastName} - ${reg.email}`;
-                    userList.appendChild(userItem);
-                });
-            }
-            
-            // Update table view
-            const tableBody = document.getElementById('registrationTableBody');
-            if (tableBody && document.getElementById('adminTableView') && !document.getElementById('adminTableView').classList.contains('hidden')) {
-                tableBody.innerHTML = '';
-                
+                tbody.innerHTML = '';
                 registrations.forEach(reg => {
-                    const row = tableBody.insertRow();
+                    const row = tbody.insertRow();
                     const interests = Array.isArray(reg.interests) ? reg.interests.join(', ') : reg.interests || '';
-                    
                     row.innerHTML = `
-                        <td>${reg.firstName} ${reg.lastName}</td>
-                        <td>${reg.gender}</td>
-                        <td>${reg.email}</td>
-                        <td>${reg.location}</td>
-                        <td>${reg.channel}</td>
+                        <td>${reg.firstName || ''} ${reg.lastName || ''}</td>
+                        <td>${reg.gender || ''}</td>
+                        <td>${reg.email || ''}</td>
+                        <td>${reg.location || ''}</td>
+                        <td>${reg.channel || ''}</td>
                         <td>${interests}</td>
                     `;
                 });
@@ -230,46 +230,35 @@ function loadRegistrations(searchQuery = '') {
         })
         .catch(error => {
             console.error('Failed to load registrations:', error);
-            const userList = document.getElementById('userList');
-            const tableBody = document.getElementById('registrationTableBody');
-            
-            if (userList) {
-                userList.innerHTML = '<div class="user-item" style="color: red;">Failed to load registrations</div>';
-            }
-            
-            if (tableBody) {
-                tableBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: red;">Failed to load registrations</td></tr>';
+            if (tbody) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:red;">Failed to load registrations</td></tr>`;
             }
         });
 }
 
+// Load feedbacks (admin-feedback.html)
 function loadFeedbacks() {
     getFeedbacks()
         .then(feedbacks => {
             const feedbackCards = document.getElementById('feedbackCards');
             if (!feedbackCards) return;
-            
-            // Clear existing data
             feedbackCards.innerHTML = '';
             
             if (feedbacks.length === 0) {
-                feedbackCards.innerHTML = '<div style="text-align: center; color: #666; padding: 20px;">No feedback available</div>';
+                feedbackCards.innerHTML = '<div style="text-align:center;color:#666;padding:20px;">No feedback available</div>';
                 return;
             }
             
             feedbacks.forEach(feedback => {
                 const card = document.createElement('div');
                 card.className = 'feedback-card';
-                
                 const date = new Date(feedback.timestamp).toLocaleDateString('en-GB');
                 const rating = feedback.rating ? ` | Rating: ${feedback.rating}/5` : '';
-                
                 card.innerHTML = `
                     <div class="feedback-name">${feedback.name || 'Anonymous User'}</div>
                     <div class="feedback-text">${feedback.text || 'No feedback text'}</div>
                     <div class="feedback-date">${date}${rating}</div>
                 `;
-                
                 feedbackCards.appendChild(card);
             });
         })
@@ -277,48 +266,35 @@ function loadFeedbacks() {
             console.error('Failed to load feedbacks:', error);
             const feedbackCards = document.getElementById('feedbackCards');
             if (feedbackCards) {
-                feedbackCards.innerHTML = '<div style="text-align: center; color: red; padding: 20px;">Failed to load feedback</div>';
+                feedbackCards.innerHTML = '<div style="text-align:center;color:red;padding:20px;">Failed to load feedback</div>';
             }
         });
 }
 
 // Search functionality with debounce
 function setupSearch() {
-    // Admin stats view search
     const adminSearch = document.getElementById('adminSearch');
     if (adminSearch) {
-        let searchTimeout;
+        let timeout;
         adminSearch.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                loadRegistrations(this.value);
-            }, 300);
-        });
-    }
-
-    // Admin table view search
-    const adminTableSearch = document.getElementById('adminTableSearch');
-    if (adminTableSearch) {
-        let searchTimeout;
-        adminTableSearch.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                loadRegistrations(this.value);
-            }, 300);
+            clearTimeout(timeout);
+            timeout = setTimeout(() => loadRegistrations(this.value), 300);
         });
     }
 }
 
 // Initialize admin pages
 function initializeAdminPage() {
-    const currentPage = window.location.pathname;
-    
-    if (currentPage.includes('admin-dashboard.html')) {
+    const path = window.location.pathname;
+    if (path.includes('admin-dashboard.html')) {
         loadAdminData();
         setupSearch();
     }
-    
-    if (currentPage.includes('admin-feedback.html')) {
+    if (path.includes('admin.html')) {
+        loadRegistrations();
+        setupSearch();
+    }
+    if (path.includes('admin-feedback.html')) {
         loadFeedbacks();
     }
 }
@@ -335,20 +311,16 @@ async function testAPIConnection() {
     }
 }
 
-// Global functions for HTML files
+// Expose global functions
 window.submitRegistrationProduction = submitRegistrationProduction;
 window.submitFeedbackProduction = submitFeedbackProduction;
 window.loadAdminData = loadAdminData;
 window.loadRegistrations = loadRegistrations;
 window.loadFeedbacks = loadFeedbacks;
 
-// Initialize on page load
+// Initialize on DOM load
 document.addEventListener('DOMContentLoaded', function() {
-    // Test API connection
     testAPIConnection();
-    
-    // Initialize admin pages
     initializeAdminPage();
-    
     console.log('MTN GITEX Nigeria website initialized with API integration');
 });

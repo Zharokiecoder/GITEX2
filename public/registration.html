@@ -84,26 +84,24 @@
         </div>
     </div>
 
+    <!-- Keep all existing UI scripts -->
     <script>
-        // Option button handlers
+        // Keep these - they handle UI interactions
         document.querySelectorAll('.option-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 const group = this.parentElement;
                 const hiddenInput = group.parentElement.querySelector('input[type="hidden"]');
 
-                // Remove active class from siblings
                 group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
-
-                // Add active class to clicked button
                 this.classList.add('active');
 
-                // Update hidden input value
                 if (hiddenInput) {
                     hiddenInput.value = this.dataset.value;
                 }
             });
         });
 
+        // Modified to work with api.js
         function validateAndProceed() {
             const form = document.getElementById('regForm');
             if (!form.checkValidity()) {
@@ -111,26 +109,33 @@
                 return;
             }
 
-            // Store form data
             const formData = new FormData(form);
             const data = {};
             for (let [key, value] of formData.entries()) {
                 data[key] = value;
             }
-
-            // Get selected options
             const genderBtn = document.querySelector('.gender-options .option-btn.active');
             const channelBtn = document.querySelector('.channel-options .option-btn.active');
 
-            if (genderBtn) data.gender = genderBtn.dataset.value;
+            if (genderBtn) {
+                data.gender = genderBtn.dataset.value;
+            } else {
+                alert('Please select your gender');
+                return;
+            }
+
             if (channelBtn) data.channel = channelBtn.dataset.value;
 
-            // Store in localStorage
-            localStorage.setItem('registrationData', JSON.stringify(data));
+            // Store consent checkbox value
+            data.consent = document.getElementById('consent').checked;
 
+            // Save to localStorage and proceed
+            localStorage.setItem('registrationData', JSON.stringify(data));
             window.location.href = 'interests.html';
+
         }
     </script>
+    <script src="api.js"></script>
 </body>
 
-</html>v
+</html>

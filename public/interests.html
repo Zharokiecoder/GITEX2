@@ -66,8 +66,7 @@
             <div class="btn-nav">
                 <button type="button" class="btn btn-secondary"
                     onclick="window.location.href='registration.html'">Back</button>
-                <button type="button" class="btn btn-primary" onclick="submitRegistration()">Submit & Feedback
-                    ></button>
+                <button type="button" class="btn btn-primary" onclick="prepareAndSubmit()">Submit & Feedback ></button>
             </div>
         </div>
     </div>
@@ -126,23 +125,23 @@
             }
         }
 
-        function submitRegistration() {
+        // Prepare data and call api.js function
+        function prepareAndSubmit() {
             if (selectedInterests.length === 0) {
                 alert('Please select at least one area of interest');
                 return;
             }
 
-            // Get stored registration data
+            // Save interests so api.js can access them
+            window.selectedInterests = selectedInterests;
+
+            // Also update localStorage with "other" field
             const registrationData = JSON.parse(localStorage.getItem('registrationData') || '{}');
-            registrationData.interests = selectedInterests;
             registrationData.otherInterest = document.getElementById('otherInterest').value;
-
-            console.log('Registration submitted:', registrationData);
-
-            // Store the complete data
             localStorage.setItem('registrationData', JSON.stringify(registrationData));
 
-            window.location.href = 'feedback.html';
+            // Call the production submit function from api.js
+            submitRegistrationProduction();
         }
 
         // Initialize counter
@@ -150,6 +149,9 @@
             updateInterestCount();
         });
     </script>
+
+    <!-- Link to API functions -->
+    <script src="api.js"></script>
 </body>
 
 </html>

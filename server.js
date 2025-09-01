@@ -1,303 +1,324 @@
+// ====== Dependencies ======
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
-const fs = require('fs').promises;
+const mongoose = require('mongoose');
+require('dotenv').config();
 
+// ====== App Config ======
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public')); // Serve frontend files from 'public' folder
+app.use(express.static('public')); // Serve frontend files
 
-// In-memory storage (will persist to files)
-let registrations = [];
-let feedbacks = [];
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
 
-// Helper function to save data to JSON files
-async function saveToFile(filename, data) {
-    try {
-        await fs.writeFile(filename, JSON.stringify(data, null, 2));
-        console.log(`✅ Data saved to ${filename}`);
-    } catch (error) {
-        console.error(`❌ Error saving to ${filename}:`, error);
-    }
-}
+// ====== MongoDB Connection ======
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+})
+  .then(() => console.log('✅ Connected to MongoDB Atlas'))
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err);
+    // Don't exit, allow server to run for testing
+    console.log('⚠️ Running without database connection');
+  });
 
-// Helper function to load data from JSON files
-async function loadFromFile(filename) {
-    try {
-        const data = await fs.readFile(filename, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.log(`📝 No existing ${filename} found, starting fresh`);
-        return [];
-    }
-}
+// ====== Schemas & Models ======
+const registrationSchema = new mongoose.Schema({
+  firstName: { type: String, trim: true, required: true },
+  lastName: { type: String, trim: true, required: true },
+  email: { 
+    type: String, 
+    trim: true, 
+    lowercase: true, 
+    required: true,
+    // Remove unique constraint to avoid duplicate issues during testing
+    index: true 
+  },
+  phone: String,
+  location: String,
+  gender: String,
+  channel: String,
+  interests: [String],
+  otherInterest: String,
+  consent: { type: Boolean, default: false },
+  timestamp: { type: Date, default: Date.now }
+});
 
-// Load existing data on startup
-async function loadData() {
-    registrations = await loadFromFile('registrations.json');
-    feedbacks = await loadFromFile('feedbacks.json');
-    console.log(`📊 Loaded ${registrations.length} registrations and ${feedbacks.length} feedbacks`);
-}
+const feedbackSchema = new mongoose.Schema({
+  feedback1: String,
+  feedback2: String,
+  rating: { type: Number, min: 1, max: 5 },
+  registrationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Registration' },
+  timestamp: { type: Date, default: Date.now }
+});
 
-// Routes
+const Registration = mongoose.model('Registration', registrationSchema);
+const Feedback = mongoose.model('Feedback', feedbackSchema);
 
-// Serve the main page
+// ====== Routes ======
+
+// Serve homepage
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Registration endpoint
 app.post('/api/register', async (req, res) => {
-    try {
-        console.log('📝 Registration data received:', req.body);
-        
-        // Validate required fields
-        const required = ['firstName', 'lastName', 'email', 'phone', 'location', 'gender', 'channel'];
-        const missing = required.filter(field => !req.body[field]);
-        
-        if (missing.length > 0) {
-            return res.status(400).json({
-                success: false,
-                message: `Missing required fields: ${missing.join(', ')}`
-            });
-        }
-
-        // Validate interest limit (max 2)
-        if (req.body.interests && req.body.interests.length > 2) {
-            return res.status(400).json({
-                success: false,
-                message: 'Maximum 2 areas of interest allowed'
-            });
-        }
-
-        // Check if email already exists
-        const existingRegistration = registrations.find(reg => reg.email === req.body.email);
-        if (existingRegistration) {
-            return res.status(400).json({
-                success: false,
-                message: 'Email already registered'
-            });
-        }
-
-        // Create registration object
-        const registration = {
-            id: Date.now(),
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            email: req.body.email,
-            phone: req.body.phone,
-            location: req.body.location, // Combined location field
-            gender: req.body.gender,
-            channel: req.body.channel,
-            interests: req.body.interests || [],
-            otherInterest: req.body.otherInterest || '',
-            consent: req.body.consent || false,
-            timestamp: new Date().toISOString()
-        };
-
-        // Save registration
-        registrations.push(registration);
-        await saveToFile('registrations.json', registrations);
-
-        console.log(`✅ New registration: ${registration.firstName} ${registration.lastName}`);
-
-        res.json({
-            success: true,
-            message: 'Registration successful',
-            id: registration.id
-        });
-
-    } catch (error) {
-        console.error('❌ Registration error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error during registration'
-        });
+  try {
+    console.log('📥 Registration request:', req.body);
+    
+    const required = ['firstName', 'lastName', 'email', 'phone', 'location', 'gender', 'channel'];
+    const missing = required.filter(field => !req.body[field]);
+    
+    if (missing.length > 0) {
+      return res.status(400).json({ 
+        success: false, 
+        message: `Missing required fields: ${missing.join(', ')}` 
+      });
     }
-});
 
-// Enhanced Feedback endpoint (supports new format with rating)
-app.post('/api/feedback', async (req, res) => {
-    try {
-        console.log('💬 Feedback received:', req.body);
-
-        // Validate feedback content
-        const { feedback1, feedback2, rating } = req.body;
-        
-        if (!feedback1 && !feedback2) {
-            return res.status(400).json({
-                success: false,
-                message: 'At least one feedback field is required'
-            });
-        }
-
-        // Validate rating if provided
-        if (rating && (rating < 1 || rating > 5)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Rating must be between 1 and 5'
-            });
-        }
-
-        const feedback = {
-            id: Date.now(),
-            feedback1: feedback1 ? feedback1.trim() : '',
-            feedback2: feedback2 ? feedback2.trim() : '',
-            rating: rating ? parseInt(rating) : null,
-            timestamp: new Date().toISOString()
-        };
-
-        feedbacks.push(feedback);
-        await saveToFile('feedbacks.json', feedbacks);
-
-        console.log('✅ New feedback saved with rating:', rating || 'No rating');
-
-        res.json({
-            success: true,
-            message: 'Feedback submitted successfully'
-        });
-
-    } catch (error) {
-        console.error('❌ Feedback error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error during feedback submission'
-        });
+    if (req.body.interests && req.body.interests.length > 2) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Maximum 2 interests allowed' 
+      });
     }
-});
 
-// Admin stats endpoint
-app.get('/api/admin/stats', (req, res) => {
-    try {
-        const stats = {
-            registrations: registrations.length,
-            feedbacks: feedbacks.length,
-            admins: 3 // Static number
-        };
-
-        console.log('📊 Stats requested:', stats);
-        res.json(stats);
-    } catch (error) {
-        console.error('❌ Stats error:', error);
-        res.status(500).json({ error: 'Failed to fetch stats' });
+    // Check for existing email (optional)
+    const existingUser = await Registration.findOne({ email: req.body.email });
+    if (existingUser) {
+      console.log('⚠️ Email already registered:', req.body.email);
+      // Still allow registration for testing
     }
-});
 
-// Get registrations with search functionality
-app.get('/api/admin/registrations', (req, res) => {
-    try {
-        const { search } = req.query;
-        let results = [...registrations]; // Create a copy
-
-        if (search && search.trim().length > 0) {
-            const searchLower = search.toLowerCase().trim();
-            results = registrations.filter(reg => 
-                reg.firstName.toLowerCase().includes(searchLower) ||
-                reg.lastName.toLowerCase().includes(searchLower) ||
-                reg.email.toLowerCase().includes(searchLower) ||
-                reg.location.toLowerCase().includes(searchLower)
-            );
-        }
-
-        // Sort by newest first
-        results.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        console.log(`📋 Returning ${results.length} registrations (search: "${search || 'none'}")`);
-        res.json(results);
-    } catch (error) {
-        console.error('❌ Get registrations error:', error);
-        res.status(500).json({ error: 'Failed to fetch registrations' });
-    }
-});
-
-// Get all feedbacks (admin only)
-app.get('/api/admin/feedbacks', (req, res) => {
-    try {
-        // Sort by newest first and format for display
-        const sortedFeedbacks = [...feedbacks]
-            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-            .map(feedback => ({
-                ...feedback,
-                name: 'Anonymous User', // Privacy protection
-                text: [feedback.feedback1, feedback.feedback2]
-                    .filter(text => text && text.trim())
-                    .join(' | ')
-            }));
-        
-        console.log(`💬 Returning ${sortedFeedbacks.length} feedbacks`);
-        res.json(sortedFeedbacks);
-    } catch (error) {
-        console.error('❌ Get feedbacks error:', error);
-        res.status(500).json({ error: 'Failed to fetch feedbacks' });
-    }
-});
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
+    const registration = await Registration.create(req.body);
+    console.log('✅ Registration created:', registration._id);
+    
     res.json({ 
-        status: 'OK', 
-        timestamp: new Date().toISOString(),
-        registrations: registrations.length,
-        feedbacks: feedbacks.length,
-        message: 'MTN GITEX Nigeria API is running'
+      success: true, 
+      message: 'Registration successful', 
+      id: registration._id 
     });
+  } catch (err) {
+    console.error('❌ Registration error:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error during registration: ' + err.message 
+    });
+  }
 });
 
-// Admin authentication check (for production use)
-app.post('/api/admin/login', (req, res) => {
-    try {
-        const { username, password } = req.body;
-        
-        if (username === 'admin@mtn.ng' && password === '1234') {
-            res.json({
-                success: true,
-                message: 'Login successful',
-                token: 'demo-token' // In production, use real JWT tokens
-            });
-        } else {
-            res.status(401).json({
-                success: false,
-                message: 'Invalid credentials'
-            });
-        }
-    } catch (error) {
-        console.error('❌ Admin login error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error during login'
-        });
+// Feedback endpoint
+app.post('/api/feedback', async (req, res) => {
+  try {
+    console.log('📥 Feedback request:', req.body);
+    
+    const { feedback1, feedback2, rating } = req.body;
+    
+    if (!feedback1 && !feedback2) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'At least one feedback field required' 
+      });
     }
+    
+    if (rating && (rating < 1 || rating > 5)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Rating must be between 1 and 5' 
+      });
+    }
+
+    const feedback = await Feedback.create({ 
+      feedback1, 
+      feedback2, 
+      rating: rating ? parseInt(rating) : null 
+    });
+    
+    console.log('✅ Feedback created:', feedback._id);
+    
+    res.json({ 
+      success: true, 
+      message: 'Feedback submitted successfully' 
+    });
+  } catch (err) {
+    console.error('❌ Feedback error:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server error during feedback submission: ' + err.message 
+    });
+  }
+});
+
+// Admin stats
+app.get('/api/admin/stats', async (req, res) => {
+  try {
+    const registrations = await Registration.countDocuments();
+    const feedbacks = await Feedback.countDocuments();
+    
+    console.log('📊 Stats:', { registrations, feedbacks });
+    
+    res.json({ 
+      registrations: registrations || 0, 
+      feedbacks: feedbacks || 0, 
+      admins: 3 
+    });
+  } catch (err) {
+    console.error('❌ Stats error:', err);
+    res.status(500).json({ 
+      registrations: 0, 
+      feedbacks: 0, 
+      admins: 3,
+      error: 'Database connection issue' 
+    });
+  }
+});
+
+// Get registrations (with search)
+app.get('/api/admin/registrations', async (req, res) => {
+  try {
+    const { search } = req.query;
+    let filter = {};
+    
+    if (search) {
+      const regex = new RegExp(search, 'i');
+      filter = { 
+        $or: [
+          { firstName: regex }, 
+          { lastName: regex }, 
+          { email: regex }, 
+          { location: regex }
+        ] 
+      };
+    }
+    
+    const results = await Registration.find(filter)
+      .sort({ timestamp: -1 })
+      .limit(200)
+      .lean(); // Use lean() for better performance
+    
+    console.log(`📋 Found ${results.length} registrations`);
+    
+    res.json(results);
+  } catch (err) {
+    console.error('❌ Get registrations error:', err);
+    res.status(500).json([]);  // Return empty array instead of error
+  }
+});
+
+// Get feedbacks
+app.get('/api/admin/feedbacks', async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find()
+      .sort({ timestamp: -1 })
+      .limit(100)
+      .lean();
+    
+    const formatted = feedbacks.map(fb => ({
+      name: 'Customer Feedback',
+      text: fb.feedback1 || fb.feedback2 || 'No feedback text',
+      rating: fb.rating,
+      timestamp: fb.timestamp,
+      _id: fb._id
+    }));
+    
+    console.log(`💬 Found ${formatted.length} feedbacks`);
+    
+    res.json(formatted);
+  } catch (err) {
+    console.error('❌ Get feedbacks error:', err);
+    res.status(500).json([]);  // Return empty array instead of error
+  }
+});
+
+// Health check
+app.get('/api/health', async (req, res) => {
+  try {
+    const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
+    const registrations = dbStatus === 'connected' ? await Registration.countDocuments() : 0;
+    const feedbacks = dbStatus === 'connected' ? await Feedback.countDocuments() : 0;
+    
+    res.json({
+      status: 'healthy',
+      database: dbStatus,
+      timestamp: new Date().toISOString(),
+      registrations,
+      feedbacks,
+      message: 'MTN GITEX Nigeria API running'
+    });
+  } catch (err) {
+    res.json({
+      status: 'healthy',
+      database: 'error',
+      message: 'API running with database issues'
+    });
+  }
+});
+
+// Admin login (demo only)
+app.post('/api/admin/login', (req, res) => {
+  const { username, password } = req.body;
+  console.log('🔐 Login attempt:', username);
+  
+  if (username === 'admin@mtn.ng' && password === '1234') {
+    return res.json({ 
+      success: true, 
+      message: 'Login successful', 
+      token: 'demo-token' 
+    });
+  }
+  
+  res.status(401).json({ 
+    success: false, 
+    message: 'Invalid credentials' 
+  });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error('💥 Unhandled error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+  console.error('💥 Unhandled error:', err);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: err.message 
+  });
 });
 
-// 404 handler for API routes
+// 404 for unknown API endpoints
 app.use('/api/*', (req, res) => {
-    res.status(404).json({ error: 'API endpoint not found' });
+  console.log('❓ Unknown API endpoint:', req.originalUrl);
+  res.status(404).json({ 
+    error: 'API endpoint not found',
+    endpoint: req.originalUrl 
+  });
 });
 
-// Catch-all handler for frontend routes
+// Frontend catch-all (must be last)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start server
-loadData().then(() => {
-    app.listen(PORT, () => {
-        console.log(`🚀 MTN GITEX Nigeria Server running on http://localhost:${PORT}`);
-        console.log(`📁 Serving frontend files from 'public' folder`);
-        console.log(`🔗 API endpoints available at /api/*`);
-        console.log(`👨‍💼 Admin login: admin@mtn.ng / 1234`);
-        console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
-    });
-}).catch(error => {
-    console.error('💥 Failed to start server:', error);
+// ====== Start Server ======
+app.listen(PORT, () => {
+  console.log(`
+🚀 Server running on http://localhost:${PORT}
+📁 Serving frontend from 'public' directory
+🔗 API endpoints available at /api/*
+📊 Admin dashboard at /admin-dashboard.html
+
+Test endpoints:
+- GET  http://localhost:${PORT}/api/health
+- GET  http://localhost:${PORT}/api/admin/stats
+- GET  http://localhost:${PORT}/api/admin/registrations
+- POST http://localhost:${PORT}/api/admin/login
+  `);
 });

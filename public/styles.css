@@ -91,7 +91,7 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.admin-badge {
+/*.admin-badge {
   position: absolute;
   bottom: 40px;
   right: 40px;
@@ -105,7 +105,7 @@ body {
   align-items: center;
   gap: 10px;
   cursor: pointer;
-}
+}*/
 
 .admin-icon {
   width: 20px;
@@ -116,6 +116,31 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 12px;
+}
+
+.admin-btn-float {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.admin-btn-float:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: translateY(-2px);
 }
 
 /* Page 2 - Register Screen Styles */

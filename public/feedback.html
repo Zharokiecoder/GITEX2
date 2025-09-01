@@ -64,7 +64,7 @@
             </div>
 
             <div class="btn-nav">
-                <button type="button" class="btn btn-primary" onclick="success.html">Submit</button>
+                <button type="button" class="btn btn-primary" onclick="submitFeedbackProduction()">Submit</button>
                 <button type="button" class="btn btn-secondary"
                     onclick="window.location.href='index.html'">Back</button>
             </div>
@@ -72,51 +72,25 @@
     </div>
 
     <script>
-        let selectedRating = null;
+        // Make it global so api.js can access it
+        window.selectedRating = null;
 
-        // Rating selection handlers
+        // Rating selection UI logic
         document.querySelectorAll('.rating-item').forEach(item => {
             item.addEventListener('click', function () {
-                // Remove selection from all items
                 document.querySelectorAll('.rating-item').forEach(r => {
                     r.classList.remove('selected');
                     r.querySelector('.rating-checkbox').checked = false;
                 });
 
-                // Select this item
                 this.classList.add('selected');
                 this.querySelector('.rating-checkbox').checked = true;
-                selectedRating = this.dataset.rating;
+                window.selectedRating = this.dataset.rating;
             });
         });
-
-        function submitFeedback() {
-            const feedback1 = document.getElementById('feedbackText1').value.trim();
-            const feedback2 = document.getElementById('feedbackText2').value.trim();
-
-            if (!feedback1 && !feedback2) {
-                alert('Please provide some feedback');
-                return;
-            }
-
-            const feedbackData = {
-                feedback1: feedback1,
-                feedback2: feedback2,
-                rating: selectedRating,
-                timestamp: new Date().toISOString()
-            };
-
-            console.log('Feedback submitted:', feedbackData);
-
-            // Store feedback in localStorage (for demo purposes)
-            let allFeedback = JSON.parse(localStorage.getItem('allFeedback') || '[]');
-            allFeedback.push(feedbackData);
-            localStorage.setItem('allFeedback', JSON.stringify(allFeedback));
-
-            alert('Thank you for your feedback!');
-            window.location.href = 'index.html';
-        }
     </script>
+
+    <script src="api.js"></script>
 </body>
 
 </html>

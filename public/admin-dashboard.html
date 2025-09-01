@@ -41,86 +41,9 @@
                         </tr>
                     </thead>
                     <tbody id="registrationTableBody">
-                        <!-- Sample data -->
+                        <!-- Data will be loaded from MongoDB -->
                         <tr>
-                            <td>John Okon</td>
-                            <td>Male</td>
-                            <td>John@gmail.com</td>
-                            <td>Lagos</td>
-                            <td>walk-in</td>
-                            <td>MoMo</td>
-                        </tr>
-                        <tr>
-                            <td>Ann Amara</td>
-                            <td>Female</td>
-                            <td>Ann@gmail.com</td>
-                            <td>Kano</td>
-                            <td>VIP</td>
-                            <td>Fiber X</td>
-                        </tr>
-                        <tr>
-                            <td>Blake Okon</td>
-                            <td>Male</td>
-                            <td>BO@gmail.com</td>
-                            <td>Abuja</td>
-                            <td>Staff</td>
-                            <td>Chinoses</td>
-                        </tr>
-                        <tr>
-                            <td>John Olu</td>
-                            <td>Male</td>
-                            <td>John3@gmail.com</td>
-                            <td>Aba</td>
-                            <td>Invited</td>
-                            <td>Fiber X</td>
-                        </tr>
-                        <tr>
-                            <td>Joel Ani</td>
-                            <td>Male</td>
-                            <td>Jay@gmail.com</td>
-                            <td>Lagos</td>
-                            <td>walk-in</td>
-                            <td>MoMo</td>
-                        </tr>
-                        <tr>
-                            <td>Esther Buba</td>
-                            <td>Female</td>
-                            <td>EstB@gmail.com</td>
-                            <td>Abuja</td>
-                            <td>Invited</td>
-                            <td>IOT</td>
-                        </tr>
-                        <tr>
-                            <td>Shep Okon</td>
-                            <td>Female</td>
-                            <td>John@gmail.com</td>
-                            <td>Lagos</td>
-                            <td>walk-in</td>
-                            <td>MoMo</td>
-                        </tr>
-                        <tr>
-                            <td>John Okon</td>
-                            <td>Male</td>
-                            <td>John@gmail.com</td>
-                            <td>Lagos</td>
-                            <td>Staff</td>
-                            <td>Fiber X</td>
-                        </tr>
-                        <tr>
-                            <td>Sissy Okon</td>
-                            <td>Female</td>
-                            <td>John@gmail.com</td>
-                            <td>Lagos</td>
-                            <td>walk-in</td>
-                            <td>Chinoses</td>
-                        </tr>
-                        <tr>
-                            <td>Smith Okon</td>
-                            <td>Male</td>
-                            <td>John@gmail.com</td>
-                            <td>Lagos</td>
-                            <td>walk-in</td>
-                            <td>MoMo</td>
+                            <td colspan="6" style="text-align: center;">Loading...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -136,24 +59,16 @@
     </div>
 
     <script>
+        // Search functionality (api.js handles the actual search)
         function searchRegistrations() {
-            const searchTerm = document.getElementById('adminSearch').value.toLowerCase();
-            const table = document.getElementById('registrationTableBody');
-            const rows = table.querySelectorAll('tr');
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                if (text.includes(searchTerm)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
+            const searchTerm = document.getElementById('adminSearch').value;
+            window.loadRegistrations(searchTerm);
         }
 
+        // Export functionality
         function exportData() {
             const table = document.getElementById('registrationTableBody');
-            const rows = Array.from(table.querySelectorAll('tr:not([style*="display: none"])'));
+            const rows = Array.from(table.querySelectorAll('tr'));
 
             let csvContent = 'Full Name,Gender,Email,Location,Registration Channel,Area of Interest\n';
 
@@ -171,16 +86,8 @@
             a.click();
             URL.revokeObjectURL(url);
         }
-
-        // Load registrations from localStorage if available
-        document.addEventListener('DOMContentLoaded', function () {
-            // This would load real registration data from localStorage
-            // const registrations = JSON.parse(localStorage.getItem('allRegistrations') || '[]');
-            // if (registrations.length > 0) {
-            //     // Populate table with real data
-            // }
-        });
     </script>
+    <script src="api.js"></script>
 </body>
 
 </html>
