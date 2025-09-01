@@ -3,77 +3,169 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTN GITEX Event - Admin Panel</title>
-    <link rel="stylesheet" href="styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MTN GITEX Event - Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            background: url("asset/background1.jpg") no-repeat center center/cover;
+        }
+
+        .ipad-screen {
+            width: 100%;
+            max-width: 768px;
+            height: auto;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header img {
+            width: 100px;
+        }
+
+        .header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .card {
+            background: #ffcc00;
+            padding: 40px 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+        }
+
+        .stat-box {
+            background: #fffaf5;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-box h1 {
+            font-size: 36px;
+            margin: 0;
+            color: #ffcc00;
+            font-weight: bold;
+        }
+
+        .stat-box p {
+            margin: 8px 0 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            opacity: 0.85;
+        }
+
+        @media (max-width: 600px) {
+            .card {
+                padding: 20px;
+            }
+
+            .stat-box h1 {
+                font-size: 28px;
+            }
+
+            .stat-box p {
+                font-size: 16px;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
-        <!-- Header -->
+    <div class="ipad-screen">
         <div class="header">
-            <div class="mtn-logo">MTN</div>
-            <div class="event-title">GITEX Event</div>
+            <img src="asset/mtn-logo.png" alt="MTN Logo">
+            <h2>GITEX Event - Admin</h2>
         </div>
 
-        <!-- Admin Panel -->
         <div class="card">
-            <div class="admin-stats">
-                <div class="stat-card">
-                    <div class="stat-number">120</div>
-                    <div class="stat-label">Registrations</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">35</div>
-                    <div class="stat-label">Feedbacks</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">Admins</div>
-                </div>
+            <div class="stat-box">
+                <h1 id="feedback-count">0</h1>
+                <p>Feedbacks</p>
+            </div>
+            <div class="stat-box">
+                <h1 id="registration-count">0</h1>
+                <p>Registrations</p>
             </div>
 
-            <div class="form-group search-input">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search by name or email"
-                    onkeyup="searchUsers()">
-            </div>
-
-            <div class="user-list" id="userList">
-                <div class="user-item" data-name="gabriel mark" data-email="gabrielmark@gmail.com">Gabriel Mark -
-                    gabrielmark@gmail.com</div>
-                <div class="user-item" data-name="timothy grey" data-email="timothygrey@gmail.com">Timothy Grey -
-                    timothygrey@gmail.com</div>
-                <div class="user-item" data-name="uchenna ngozi" data-email="uchennangozi@gmail.com">Uchenna Ngozi -
-                    uchennangozi@gmail.com</div>
-                <div class="user-item" data-name="mary felix" data-email="maryfelix@gmail.com">Mary Felix -
-                    maryfelix@gmail.com</div>
-            </div>
-
-            <div class="btn-nav">
-                <button type="button" class="btn btn-primary"
-                    onclick="window.location.href='feedback.html'">Feedback</button>
-                <button type="button" class="btn btn-secondary"
-                    onclick="window.location.href='main-menu.html'">Back</button>
+            <div class="btn-group">
+                <button class="btn" onclick="location.href='admin-feedback.html'">Feedback</button>
+                <button class="btn" onclick="location.href='admin-dashboard.html'">Dashboard</button>
+                <button class="btn" onclick="location.href='admin-login.html'">Logout</button>
             </div>
         </div>
     </div>
 
+    <script src="api.js"></script>
     <script>
-        function searchUsers() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const userItems = document.querySelectorAll('.user-item');
-
-            userItems.forEach(item => {
-                const name = item.dataset.name.toLowerCase();
-                const email = item.dataset.email.toLowerCase();
-
-                if (name.includes(searchTerm) || email.includes(searchTerm)) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
+        async function refreshStats() {
+            try {
+                const stats = await getAdminStats();
+                document.getElementById('feedback-count').textContent = stats.feedbacks || 0;
+                document.getElementById('registration-count').textContent = stats.registrations || 0;
+            } catch (error) {
+                console.error('Failed to load stats:', error);
+            }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            refreshStats();                // load immediately
+            setInterval(refreshStats, 10000); // refresh every 10s
+        });
     </script>
 </body>
 

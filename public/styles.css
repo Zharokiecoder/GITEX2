@@ -156,7 +156,7 @@ body {
 .gitex-subtitle {
   font-size: 20px;
   font-weight: 600;
-  color: #000000;
+  color: white;
 }
 
 .welcome-text-black {
@@ -221,7 +221,7 @@ body {
 
 /* Card Container */
 .card {
-  background: #ffffff;
+  background: Transparent;
   border-radius: 20px;
   padding: 35px;
   width: 90%;
