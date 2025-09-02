@@ -156,7 +156,7 @@ body {
 .gitex-subtitle {
   font-size: 20px;
   font-weight: 600;
-  color: white;
+  color: black;
 }
 
 .welcome-text-black {
@@ -539,15 +539,49 @@ textarea.form-control {
 .card[style*="max-width: 800px"] {
   max-width: 800px !important;
 }
-
-.form-group[style*="position: relative"] {
+/* Group wrapper for search + button */
+.form-group {
+  display: flex;
+  flex-direction: column; /* stack search + button vertically */
+  gap: 10px;
   position: relative;
+  width: 100%;
 }
 
-.export-btn {
+/* Search input wrapper */
+.search-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Search input */
+.form-control {
+  width: 100%;
+  padding: 10px 40px 10px 12px; /* space for filter icon */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* Filter icon inside input */
+.filter-icon {
   position: absolute;
-  right: 0;
-  top: 0;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #555;
+  cursor: pointer;
+}
+
+.filter-icon:hover {
+  color: #000;
+}
+
+/* Export button aligned right under search */
+.export-btn {
+  align-self: flex-end;
   padding: 10px 25px;
   background: #1a1a1a;
   color: #ffffff;
@@ -555,16 +589,14 @@ textarea.form-control {
   border-radius: 20px;
   font-size: 14px;
   cursor: pointer;
+  transition: background 0.2s ease-in-out;
 }
 
 .export-btn:hover {
   background: #333333;
 }
 
-#adminSearch {
-  padding-right: 120px;
-}
-
+/* Table styling */
 .table-container {
   width: 100%;
   overflow-x: auto;
